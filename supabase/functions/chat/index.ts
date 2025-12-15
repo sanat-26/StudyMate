@@ -13,12 +13,7 @@ serve(async (req) => {
 
   try {
     const { message, userId } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
-    }
-
+    const GEMINI_API_KEY = "AIzaSyC2J_J1T82XTkeR_MVfL4ht-6BJkrocDb8";
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -46,50 +41,62 @@ serve(async (req) => {
       .order('created_at', { ascending: true })
       .limit(20);
 
-    const messages = [
+    const contents = [
       {
-        role: 'system',
-        content: `You are StudyMate, an AI tutor that helps students learn from their course materials. 
-
-IMPORTANT RULES:
-1. ONLY answer questions based on the provided course materials below.
-2. If the question cannot be answered from the provided materials, politely say "I don't have information about that in your uploaded materials. Please upload relevant study materials or rephrase your question."
-3. If there are no uploaded materials, encourage the user to upload their notes, textbooks, or study materials first.
-4. Be encouraging, helpful, and explain concepts clearly.
-5. Use examples from the materials when possible.
-6. If asked about topics outside the materials, you may provide brief general knowledge but always note it's not from their course materials.
-
-USER'S UPLOADED MATERIALS:
-${fileContext || 'No materials uploaded yet. Please encourage the user to upload their study materials.'}`
+        role: 'user',
+        parts: [{
+          text: `You are StudyMate, an AI tutor that helps students learn from their course materials.
+          
+          IMPORTANT RULES:
+          1. ONLY answer questions based on the provided course materials below.
+          2. If the question cannot be answered from the provided materials, politely say "I don't have information about that in your uploaded materials. Please upload relevant study materials or rephrase your question."
+          3. If there are no uploaded materials, encourage the user to upload their notes, textbooks, or study materials first.
+          4. Be encouraging, helpful, and explain concepts clearly.
+          5. Use examples from the materials when possible.
+          6. If asked about topics outside the materials, you may provide brief general knowledge but always note it's not from their course materials.
+          
+          USER'S UPLOADED MATERIALS:
+          ${fileContext || 'No materials uploaded yet. Please encourage the user to upload their study materials.'}`
+        }]
       }
     ];
 
     // Add conversation history
     if (chatHistory && chatHistory.length > 0) {
       chatHistory.forEach(msg => {
-        messages.push({ role: msg.role, content: msg.content });
+        contents.push({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }]
+        });
       });
     }
 
     // Add current message
-    messages.push({ role: 'user', content: message });
+    contents.push({
+      role: 'user',
+      parts: [{ text: message }]
+    });
 
-    console.log('Sending request to Lovable AI with context from', files?.length || 0, 'files');
+    console.log('Sending request to Gemini API with context from', files?.length || 0, 'files');
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages,
-        stream: true,
+        contents,
+        generationConfig: {
+          temperature: 0.5,
+          maxOutputTokens: 2048
+        }
       }),
     });
 
     if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Gemini API error:', errorData);
+      
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), {
           status: 429,
@@ -102,18 +109,23 @@ ${fileContext || 'No materials uploaded yet. Please encourage the user to upload
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
-      throw new Error('AI gateway error');
+      
+      throw new Error(errorData.error?.message || 'Gemini API error');
     }
 
-    return new Response(response.body, {
-      headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+    const responseData = await response.json();
+    const answer = responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    return new Response(JSON.stringify({ answer }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error: unknown) {
     console.error('Chat function error:', error);
     const message = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({
+      error: message,
+      stack: error instanceof Error ? error.stack : undefined
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

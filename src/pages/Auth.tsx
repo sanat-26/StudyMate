@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,19 +10,39 @@ import { z } from 'zod';
 
 const authSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  fullName: z.string().min(2, 'Name must be at least 2 characters').optional(),
 });
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
+
+  // Handle OTP verification if token exists in URL
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      const verifyToken = async () => {
+        try {
+          const { error } = await supabase.auth.verifyOtp({
+            token_hash: token,
+            type: 'magiclink',
+          });
+          if (error) throw error;
+          navigate('/dashboard');
+        } catch (error: any) {
+          toast({
+            title: 'Verification Error',
+            description: error.message,
+            variant: 'destructive',
+          });
+        }
+      };
+      verifyToken();
+    }
+  }, [searchParams, navigate, toast]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -42,10 +62,7 @@ const Auth = () => {
 
   const validateForm = () => {
     try {
-      const data = isLogin 
-        ? { email, password }
-        : { email, password, fullName };
-      authSchema.parse(data);
+      authSchema.parse({ email });
       setErrors({});
       return true;
     } catch (err) {
@@ -69,32 +86,24 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-        toast({ title: 'Welcome back!', description: 'Successfully logged in.' });
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: { full_name: fullName },
-          },
-        });
-        if (error) throw error;
-        toast({ title: 'Account created!', description: 'Welcome to StudyMate.' });
-      }
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: window.location.origin + '/auth',
+        },
+      });
+      if (error) throw error;
+      toast({
+        title: 'Check your email',
+        description: 'We sent you a magic link to sign in. Click the link in your email to continue.',
+      });
     } catch (error: any) {
       console.error('Auth error:', error);
-      let message = error.message;
-      if (error.message.includes('already registered')) {
-        message = 'This email is already registered. Please log in instead.';
-      }
-      toast({ title: 'Error', description: message, variant: 'destructive' });
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
     } finally {
       setLoading(false);
     }
@@ -120,32 +129,13 @@ const Auth = () => {
             </div>
 
             <h1 className="text-2xl font-display font-bold text-center mb-2">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
+              Continue with Email
             </h1>
             <p className="text-muted-foreground text-center mb-6">
-              {isLogin
-                ? 'Log in to continue learning'
-                : 'Start your personalized learning journey'}
+              Enter your email to get a magic login link
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="John Doe"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className={errors.fullName ? 'border-destructive' : ''}
-                  />
-                  {errors.fullName && (
-                    <p className="text-sm text-destructive">{errors.fullName}</p>
-                  )}
-                </div>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -161,21 +151,6 @@ const Auth = () => {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={errors.password ? 'border-destructive' : ''}
-                />
-                {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
-                )}
-              </div>
-
               <Button
                 type="submit"
                 className="w-full bg-gradient-primary"
@@ -184,23 +159,13 @@ const Auth = () => {
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 ) : null}
-                {isLogin ? 'Log In' : 'Create Account'}
+                Send Magic Link
               </Button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-muted-foreground">
-                {isLogin ? "Don't have an account?" : 'Already have an account?'}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsLogin(!isLogin);
-                    setErrors({});
-                  }}
-                  className="ml-1 text-primary font-medium hover:underline"
-                >
-                  {isLogin ? 'Sign up' : 'Log in'}
-                </button>
+                By continuing, you agree to our Terms of Service and Privacy Policy
               </p>
             </div>
           </div>

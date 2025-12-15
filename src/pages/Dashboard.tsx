@@ -128,8 +128,8 @@ const Dashboard = () => {
                 </div>
                 <h2 className="text-xl font-display font-bold mb-2">Welcome to StudyMate!</h2>
                 <p className="text-muted-foreground max-w-md mb-6">
-                  Upload your study materials and start asking questions. I'll help you learn from
-                  your own course content!
+                  Upload text files (.txt/.md) containing your study materials.
+                  I'll help you learn from your course content! (Other file types can be stored but won't be analyzed)
                 </p>
                 <Button onClick={() => fileInputRef.current?.click()} className="bg-gradient-primary">
                   <Upload className="w-4 h-4 mr-2" />
@@ -190,7 +190,7 @@ const Dashboard = () => {
               ref={fileInputRef}
               type="file"
               className="hidden"
-              accept=".txt,.md,.pdf,.doc,.docx"
+              accept=".txt,.md"
               onChange={handleFileUpload}
             />
           </div>

@@ -47,9 +47,14 @@ export const useFiles = () => {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const text = e.target?.result as string;
-        // Limit content to ~50KB for database storage
-        resolve(text?.slice(0, 50000) || '');
+        try {
+          const text = e.target?.result as string;
+          // Limit content to ~50KB for database storage
+          resolve(text?.slice(0, 50000) || '');
+        } catch (error) {
+          console.error('Text extraction error:', error);
+          resolve('');
+        }
       };
       reader.onerror = () => resolve('');
       reader.readAsText(file);
@@ -64,8 +69,14 @@ export const useFiles = () => {
     try {
       // Extract text content for AI context
       let content = '';
-      if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+      // Only process text-based files
+      if (file.type.startsWith('text/') || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
         content = await extractTextFromFile(file);
+      } else {
+        toast({
+          title: 'Partial Processing',
+          description: 'Only text content from TXT/MD files can be used for questions. Other file types are stored but not analyzed.',
+        });
       }
 
       // Upload to storage
