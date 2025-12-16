@@ -67,8 +67,6 @@ export const useChat = () => {
       content,
     });
 
-    await incrementQuestions();
-
     // Add placeholder for assistant message
     let assistantContent = '';
     const assistantId = `assistant-${Date.now()}`;
@@ -106,6 +104,7 @@ export const useChat = () => {
         role: 'assistant',
         content: assistantContent,
       });
+      await incrementQuestions();
 
       // Refresh messages to get proper IDs
       await fetchMessages();

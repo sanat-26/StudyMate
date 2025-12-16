@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useFiles } from '@/hooks/useFiles';
@@ -150,7 +152,31 @@ const Dashboard = () => {
                           : 'bg-card border border-border'
                       }`}
                     >
-                      <p className="whitespace-pre-wrap">{msg.content || '...'}</p>
+                      <div className="prose prose-sm dark:prose-invert whitespace-pre-wrap">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            p: ({ node, ...props }) => <p className="mb-0" {...props} />,
+                            a: ({ node, ...props }) => <a className="text-blue-400 hover:underline" {...props} />,
+                            code: ({ node, className, children, ...props }) => {
+                              const match = /language-(\w+)/.exec(className || '');
+                              return match ? (
+                                <pre className="p-2 rounded-md bg-gray-800 text-white overflow-x-auto my-2">
+                                  <code className={className} {...props}>
+                                    {children}
+                                  </code>
+                                </pre>
+                              ) : (
+                                <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded-md text-sm" {...props}>
+                                  {children}
+                                </code>
+                              );
+                            },
+                          }}
+                        >
+                          {msg.content || '...'}
+                        </ReactMarkdown>
+                      </div>
                     </div>
                   </div>
                 ))}

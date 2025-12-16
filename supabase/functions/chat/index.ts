@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     const { message, userId } = await req.json();
-    const GEMINI_API_KEY = "AIzaSyC2J_J1T82XTkeR_MVfL4ht-6BJkrocDb8";
+    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')!;
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
