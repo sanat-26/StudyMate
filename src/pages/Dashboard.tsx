@@ -57,6 +57,11 @@ const Dashboard = () => {
     }
   };
 
+  const handleClearChat = async () => {
+    await clearChat();
+    setInput('');
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -135,7 +140,7 @@ const Dashboard = () => {
                 </p>
                 <Button onClick={() => fileInputRef.current?.click()} className="bg-gradient-primary">
                   <Upload className="w-4 h-4 mr-2" />
-                  Upload Your First File
+                  Upload Your Files
                 </Button>
               </div>
             ) : (
@@ -208,6 +213,15 @@ const Dashboard = () => {
                 disabled={sending}
                 className="flex-1"
               />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleClearChat}
+                disabled={sending}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
               <Button onClick={handleSend} disabled={sending || !input.trim()} className="bg-gradient-primary">
                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               </Button>

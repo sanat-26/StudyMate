@@ -24,9 +24,10 @@ export const useChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [chatCleared, setChatCleared] = useState(localStorage.getItem('chatCleared') === 'true');
 
   const fetchMessages = async () => {
-    if (!user) return;
+    if (!user || localStorage.getItem('chatCleared') === 'true') return;
 
     const { data, error } = await supabase
       .from('chat_messages')
@@ -50,6 +51,8 @@ export const useChat = () => {
     if (!user || !content.trim()) return;
 
     setSending(true);
+    setChatCleared(false);
+    localStorage.removeItem('chatCleared');
 
     // Add user message to UI immediately
     const userMessage: Message = {
@@ -106,8 +109,7 @@ export const useChat = () => {
       });
       await incrementQuestions();
 
-      // Refresh messages to get proper IDs
-      await fetchMessages();
+      // No need to refresh messages to get proper IDs, local state is sufficient
     } catch (error: any) {
       console.error('Chat error:', error);
       toast({
@@ -125,9 +127,21 @@ export const useChat = () => {
   const clearChat = async () => {
     if (!user) return;
 
-    await supabase.from('chat_messages').delete().eq('user_id', user.id);
-    setMessages([]);
+    setMessages([]); // Clear messages immediately for visual feedback
     toast({ title: 'Chat cleared', description: 'Your conversation history has been deleted.' });
+
+    const { error: deleteError } = await supabase.from('chat_messages').delete().eq('user_id', user.id);
+    
+    if (deleteError) {
+      console.error('Error clearing chat:', deleteError);
+      toast({ title: 'Error', description: 'Could not clear chat history permanently.', variant: 'destructive' });
+      // If there's an error, attempt to re-fetch messages to show what's still there
+      await fetchMessages();
+      return;
+    }
+    setChatCleared(true);
+    localStorage.setItem('chatCleared', 'true');
+    // No need to fetchMessages here, as the local state is already cleared and DB should be empty
   };
 
   return { messages, loading, sending, sendMessage, clearChat };
