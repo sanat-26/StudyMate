@@ -162,7 +162,7 @@ const Dashboard = () => {
                           remarkPlugins={[remarkGfm]}
                           components={{
                             p: ({ node, ...props }) => <p className="mb-0" {...props} />,
-                            a: ({ node, ...props }) => <a className="text-blue-400 hover:underline" {...props} />,
+                            a: ({ node, ...props }) => <a className="text-foreground font-semibold hover:underline" {...props} />,
                             code: ({ node, className, children, ...props }) => {
                               const match = /language-(\w+)/.exec(className || '');
                               return match ? (
