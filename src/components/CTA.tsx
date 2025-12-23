@@ -25,22 +25,16 @@ export function CTA() {
                 <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face" alt="" className="w-6 h-6 rounded-full border-2 border-card" />
                 <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face" alt="" className="w-6 h-6 rounded-full border-2 border-card" />
               </span>
-              Join 15,000+ students already learning smarter
+              Join the students already learning smarter
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-4">
               Ready to Transform Your Study Habits?
             </h2>
-            <p className="text-lg text-muted-foreground mb-2">
-              Start your 14-day free trial today
-            </p>
-            <p className="text-sm text-accent font-medium mb-8 animate-pulse">
-              ⚡ Limited spots for extended 30-day access this month
-            </p>
 
             <div className="max-w-lg mx-auto mb-6">
               <Button onClick={() => navigate("/auth")} variant="hero" size="xl" className="w-full sm:w-auto">
-                Start Free Trial
+                Start Now
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </div>
@@ -48,15 +42,15 @@ export function CTA() {
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-muted-foreground">
               <span className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-primary" />
-                No credit card required
+                No fee required
               </span>
               <span className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-primary" />
-                14-day free trial
+                Personalized Learning
               </span>
               <span className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-primary" />
-                Cancel anytime
+                Full Web Support
               </span>
             </div>
           </div>

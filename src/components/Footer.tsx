@@ -119,7 +119,7 @@ export function Footer() {
         <div className="pt-3 border-t border-primary-foreground/10 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-primary-foreground/60">
           <p className="text-center">© 2025 StudyMate. All rights reserved.</p>
           <p className="flex items-center gap-1">
-            Made with <Heart className="w-4 h-4 text-destructive fill-current" /> for students everywhere
+            Made with <Heart className="w-4 h-4 text-white fill-yellow-50 " /> for students everywhere
           </p>
         </div>
       </div>

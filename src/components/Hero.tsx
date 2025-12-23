@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const stats = [
-  { value: "15,000+", label: "Students", icon: Users },
   { value: "100%", label: "Accuracy", icon: TrendingUp },
   { value: "24/7", label: "AI Support", icon: Clock },
 ];
@@ -52,7 +51,7 @@ export function Hero() {
                 onClick={() => navigate("/auth")}
               >
                 <Rocket className="w-5 h-5" />
-                Start Free Trial
+                Get Started
               </Button>
               <Button 
                 variant="heroOutline" 
