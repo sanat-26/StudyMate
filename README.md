@@ -1,6 +1,6 @@
 # AI Study Helper
 
-An AI-powered study assistant that helps students understand concepts, summarize topics, and ask follow-up questions in a structured way.
+An AI-powered study assistant that helps students understand concepts, summarize topics, and answers follow-up questions only from your notes, no hallucinated answers.
 
 ## 🚀 Live Demo
 https://your-project-name.vercel.app
