@@ -24,8 +24,10 @@ https://your-project-name.vercel.app
 ### Signup
 ![Signup](assets/auth.png)
 
-### Chat
+### Upload files
 ![Chat](assets/welcome_chat.png)
+
+### Chat
 ![Ask from your notes](assets/chat.png)
 
 ### Contact us
@@ -63,7 +65,7 @@ Frontend → Supabase (Auth & DB)
 
 ## 🧪 Local Setup
 ```bash
-git clone https://github.com/USERNAME/REPO_NAME.git
+git clone https://github.com/sanat-26/StudyMate.git
 cd REPO_NAME
 npm install
 npm run dev
