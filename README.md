@@ -1,71 +1,69 @@
-# Welcome to your project
+# AI Study Helper
 
-## Project info
+An AI-powered study assistant that helps students understand concepts, summarize topics, and ask follow-up questions in a structured way.
 
-**URL**: REPLACE_WITH_PROJECT_URL
+## 🚀 Live Demo
+https://your-project-name.vercel.app
 
-## How can I edit this code?
+## 🧠 Features
+- AI-powered Q&A using Google Gemini
+- Structured study assistance
+- Secure backend API (no exposed keys)
+- User authentication
+- Persistent study history
 
-There are several ways of editing your application.
+## 📸 Screenshots
 
-**Use your preferred IDE**
+### Home Page
+![Dashboard](assets/dashboard.png)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected.
+### Features
+![Features](assets/features1.png)
+![Why choose StudyMate](assets/features.png)
 
-**Use your preferred IDE**
+### Signup
+![Signup](assets/auth.png)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Chat
+![Chat](assets/welcome_chat.png)
+![Ask from your notes](assets/chat.png)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Contact us
+![Contact](assets/footer.png)
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
+## 🛠 Tech Stack
+**Frontend**
 - React
-- shadcn-ui
+- TypeScript
 - Tailwind CSS
+- shadcn ui
 
-## How can I deploy this project?
+**Backend**
+- TypeScript (Serverless APIs)
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+**Database & Auth**
+- Supabase
 
-## Can I connect a custom domain to my Lovable project?
+**AI**
+- Google Gemini API
 
-Yes, you can!
+## 🏗 Architecture
+Frontend → Backend APIs → Gemini API  
+Frontend → Supabase (Auth & DB)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🔐 Security
+- API keys stored in environment variables
+- AI calls handled server-side
+- Supabase Row Level Security enabled
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 📦 Deployment
+- Source control: GitHub
+- Hosting: Vercel
+- Database: Supabase
+
+## 🧪 Local Setup
+```bash
+git clone https://github.com/USERNAME/REPO_NAME.git
+cd REPO_NAME
+npm install
+npm run dev
