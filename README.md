@@ -66,6 +66,6 @@ Frontend → Supabase (Auth & DB)
 ## 🧪 Local Setup
 ```bash
 git clone https://github.com/sanat-26/StudyMate.git
-cd REPO_NAME
+cd StudyMate
 npm install
 npm run dev
