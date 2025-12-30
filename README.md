@@ -3,7 +3,7 @@
 An AI-powered study assistant that helps students understand concepts, summarize topics, and answers follow-up questions only from your notes, no hallucinated answers.
 
 ## 🚀 Live Demo
-https://your-project-name.vercel.app
+https://studymate-bice.vercel.app/
 
 ## 🧠 Features
 - AI-powered Q&A using Google Gemini
